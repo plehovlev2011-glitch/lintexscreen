@@ -1,327 +1,521 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Скринменеджер ЛИнТех 28</title>
+    <title>Microsoft Teams — Плехов Лев · ЛИнТех 28</title>
     <style>
-        * { margin: 0; padding: 0; }
-        body, html { 
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden; 
-            background: #000;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
         }
-        #screenImage {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+
+        body {
+            height: 100vh;
+            display: flex;
+            background-color: #f3f2f1; /* типичный фон Teams (серый/белый) */
         }
-        .admin-panel {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            background: #2c3e50;
-            border: 2px solid #34495e;
-            padding: 15px;
-            font-family: monospace;
-            color: #ecf0f1;
-            display: none;
-            z-index: 1000;
+
+        /* БОКОВАЯ ПАНЕЛЬ (ЛЕВОЕ МЕНЮ) — как в десктопном Teams */
+        .nav-sidebar {
+            width: 72px;
+            background-color: #2b2b2b;  /* тёмная тема боковой панели */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
-        .pin-input {
-            margin: 10px 0;
-        }
-        .pin-input input {
+
+        .avatar-mini {
             width: 40px;
-            height: 50px;
-            text-align: center;
-            font-size: 24px;
-            margin: 0 5px;
-            background: #34495e;
-            border: 1px solid #7f8c8d;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #5a5c5e;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>');
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 30px;
+            border: 2px solid #888;
+        }
+
+        .nav-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            color: #d1d1d1;
+            font-size: 12px;
+            cursor: default;
+            transition: 0.1s;
+        }
+
+        .nav-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+            margin-bottom: 2px;
+        }
+
+        .nav-icon span {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .nav-icon.active {
+            background-color: #3b3b3b;
+            color: white;
+            border-left: 2px solid #5c9bd5;
+        }
+
+        .nav-icon:hover {
+            background-color: #3e3e3e;
             color: white;
         }
-        button {
-            padding: 8px 15px;
-            margin: 5px;
-            background: #3498db;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-family: monospace;
+
+        /* ОСНОВНАЯ ОБЛАСТЬ: список чатов + переписка */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            background-color: #ffffff;
         }
-        button:hover {
-            background: #2980b9;
+
+        /* ПАНЕЛЬ ЧАТОВ (слева, но вторая колонка) */
+        .chat-list-panel {
+            width: 320px;
+            background-color: #faf9f8;
+            border-right: 1px solid #e1dfdd;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
         }
-        select, input[type="datetime-local"] {
-            padding: 8px;
-            margin: 5px;
-            background: #34495e;
-            border: 1px solid #7f8c8d;
+
+        .chat-header {
+            padding: 16px 16px 8px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #252423;
+            border-bottom: 1px solid #e1dfdd;
+        }
+
+        .chat-items {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            gap: 12px;
+            border-bottom: 1px solid #edebe9;
+            cursor: default;
+            background-color: #faf9f8;
+        }
+
+        .chat-item.active {
+            background-color: #e5f0fb;
+        }
+
+        .chat-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: #c7e0f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #1f1f1f;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        /* Аватарки специфичные */
+        .chat-avatar.anna { background-color: #f1c6c6; }
+        .chat-avatar.ludmila { background-color: #d0e3cc; }
+        .chat-avatar.platon { background-color: #f9d7a1; }
+        .chat-avatar.nastya { background-color: #d1b2e8; }
+
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #201f1e;
+            display: flex;
+            justify-content: space-between;
+        }
+        .chat-time {
+            font-size: 11px;
+            color: #8a8886;
+            font-weight: 400;
+        }
+        .chat-preview {
+            font-size: 13px;
+            color: #5e5b58;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 4px;
+        }
+
+        /* ПАНЕЛЬ ПЕРЕПИСКИ (справа) */
+        .conversation-panel {
+            flex: 1;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .conversation-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e1dfdd;
+            font-weight: 600;
+            font-size: 15px;
+            color: #252423;
+            background-color: #ffffff;
+        }
+
+        .message-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 70%;
+        }
+
+        .message.incoming {
+            align-self: flex-start;
+        }
+
+        .message.outgoing {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .msg-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #c7e0f4;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .msg-bubble {
+            background-color: white;
+            padding: 10px 14px;
+            border-radius: 18px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            font-size: 14px;
+            color: #252423;
+            line-height: 1.4;
+            word-break: break-word;
+            border: 1px solid #eaeaea;
+        }
+
+        .message.outgoing .msg-bubble {
+            background-color: #e5f0fb;
+            border: 1px solid #b6d6f0;
+        }
+
+        .msg-time {
+            font-size: 11px;
+            color: #8a8886;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        /* вложения файлов */
+        .file-attachment {
+            display: flex;
+            align-items: center;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin: 8px 0 4px;
+            gap: 12px;
+            border: 1px solid #d2d0ce;
+        }
+
+        .file-icon {
+            background: #8a8886;
             color: white;
-            font-family: monospace;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #1f1f1f;
+        }
+
+        /* нижняя панель ввода (ненастоящая) */
+        .message-input-footer {
+            border-top: 1px solid #e1dfdd;
+            padding: 12px 20px;
+            background-color: #ffffff;
+            color: #8a8886;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .fake-input {
+            flex: 1;
+            background-color: #f5f5f5;
+            border-radius: 20px;
+            padding: 8px 16px;
+            border: 1px solid #e1dfdd;
+            color: #323130;
+        }
+
+        /* мелкие детали */
+        .small-note {
+            font-size: 12px;
+            color: #605e5c;
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            width: 10px;
+            height: 10px;
+            background-color: #7fba7a;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 4px;
         }
     </style>
 </head>
 <body>
-    <img id="screenImage" src="" alt="">
-    
-    <div id="adminPanel" class="admin-panel">
-        <h3>СКРИНМЕНЕДЖЕР v1.0</h3>
-        <div id="pinSection">
-            <div>PIN код:</div>
-            <div class="pin-input">
-                <input type="password" maxlength="1" data-index="0">
-                <input type="password" maxlength="1" data-index="1">
-                <input type="password" maxlength="1" data-index="2">
-                <input type="password" maxlength="1" data-index="3">
-            </div>
-            <div id="pinError" style="color: #e74c3c; display: none;">Неверный PIN</div>
+    <!-- ЛЕВАЯ ПАНЕЛЬ (иконки: Действие, Календарь, Команды, Задания, Чаты, Приложения) -->
+    <div class="nav-sidebar">
+        <div class="avatar-mini" title="Лев Плехов, 8Е"></div>
+        <div class="nav-icon">
+            <svg viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 8.07 19 9.96 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.04 1.01-3.93 2.58-5.41L6.17 5.17C4.23 7.05 3 9.58 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.42-1.23-4.95-3.17-6.83z"/></svg>
+            <span>Действие</span>
         </div>
-        
-        <div id="mainMenu" style="display: none;">
-            <div>
-                <button onclick="simulateTime()">Симит. время</button>
-                <input type="datetime-local" id="simulatedTime">
+        <div class="nav-icon">
+            <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM7 12h5v2H7z"/></svg>
+            <span>Календарь</span>
+        </div>
+        <div class="nav-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 12.25c1.24 0 2.25-1.01 2.25-2.25S13.24 7.75 12 7.75 9.75 8.76 9.75 10s1.01 2.25 2.25 2.25zm0-7.5c2.9 0 5.25 2.35 5.25 5.25s-2.35 5.25-5.25 5.25S6.75 12.9 6.75 10 9.1 4.75 12 4.75zM4 17.5c.88-1.27 3.03-2.5 8-2.5s7.12 1.23 8 2.5v2H4v-2z"/></svg>
+            <span>Команды</span>
+        </div>
+        <div class="nav-icon">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            <span>Задания</span>
+        </div>
+        <div class="nav-icon active">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+            <span>Чаты</span>
+        </div>
+        <div class="nav-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+            <span>Приложения</span>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- СПИСОК ЧАТОВ (слева) -->
+        <div class="chat-list-panel">
+            <div class="chat-header">
+                <span>Недавние чаты</span>
             </div>
-            <div>
-                <button onclick="changeSlide()">Сменить заставку</button>
-                <select id="slideSelect">
-                    <option value="auto">Авто</option>
-                    <option value="empty">empty.png</option>
-                    <option value="readyto">readyto.png</option>
-                    <option value="tosleep">tosleep.png</option>
-                    <option value="1">Заставка 1</option>
-                    <option value="2">Заставка 2</option>
-                    <option value="3">Заставка 3</option>
-                    <option value="4">Заставка 4</option>
-                    <option value="5">Заставка 5</option>
-                </select>
+            <div class="chat-items">
+                <!-- Чат с Малковой А.В. (завуч) -->
+                <div class="chat-item">
+                    <div class="chat-avatar anna">АМ</div>
+                    <div class="chat-info">
+                        <div class="chat-name">Малкова Анна Вячеславовна <span class="chat-time">10:42</span></div>
+                        <div class="chat-preview">Вы: когда собрание?</div>
+                    </div>
+                </div>
+                <!-- Чат с Кашиной Л.В. (библиотека) -->
+                <div class="chat-item">
+                    <div class="chat-avatar ludmila">ЛК</div>
+                    <div class="chat-info">
+                        <div class="chat-name">Кашина Людмила Валентиновна <span class="chat-time">вчера</span></div>
+                        <div class="chat-preview">Вы: учебник сдадите?</div>
+                    </div>
+                </div>
+                <!-- Чат с Платоном (активный выделен) -->
+                <div class="chat-item active">
+                    <div class="chat-avatar platon">ПБ</div>
+                    <div class="chat-info">
+                        <div class="chat-name">Береснев Платон 8Е <span class="chat-time">13:25</span></div>
+                        <div class="chat-preview">Платон: лол :Р</div>
+                    </div>
+                </div>
+                <!-- Чат с Наймушиной А.А. -->
+                <div class="chat-item">
+                    <div class="chat-avatar nastya">НА</div>
+                    <div class="chat-info">
+                        <div class="chat-name">Наймушина Анастасия Андреевна <span class="chat-time">11:03</span></div>
+                        <div class="chat-preview">Оценка 3</div>
+                    </div>
+                </div>
+                <!-- Ещё пара чатов для "много чатов" -->
+                <div class="chat-item"><div class="chat-avatar">СМ</div><div class="chat-info"><div class="chat-name">Смирнов Дима <span class="chat-time">пн</span></div><div class="chat-preview">ок</div></div></div>
+                <div class="chat-item"><div class="chat-avatar">АЛ</div><div class="chat-info"><div class="chat-name">Алексей Борисович <span class="chat-time">12 апр</span></div><div class="chat-preview">задание на пятницу</div></div></div>
+                <div class="chat-item"><div class="chat-avatar">ИВ</div><div class="chat-info"><div class="chat-name">Иванова Елена <span class="chat-time">11 апр</span></div><div class="chat-preview">спасибо</div></div></div>
             </div>
-            <div>
-                <button onclick="refreshPage()">Обновить стр.</button>
-                <button onclick="toggleAutoRefresh()" id="refreshBtn">Авто: ВКЛ</button>
+        </div>
+
+        <!-- ОСНОВНАЯ ПАНЕЛЬ (переписка) динамически меняется, но покажем чат с Платоном (так как активный) и вставим все переписки через скрытые блоки? -->
+        <!-- Поскольку задача показать все переписки, лучше в одной области покажем пример переписки Платона, а ниже скрытые диалоги — нет, нужно отобразить всё сразу. 
+        Но в Teams обычно один открытый чат. Я сделаю удобно: сейчас активный Платон (дружеская), но я вставлю четыре разных сообщения разных людей подряд? Так некрасиво.
+        Сделаем карусель сообщений? Нет, более правильно: визуально покажем, что в чатах много записей, а открыт чат с Платоном, но в этой же области отобразим также переписку с Наймушиной (как пример вложений) отдельным фрагментом ниже под чертой? 
+        Лучше поступим так: сделаем вкладки? Но Teams так не делает. Я создам переписку с Платоном (активный чат) и чуть ниже — отдельно переписку с Наймушиной Анастасией Андреевной, пометив, что это "Последние сообщения из других чатов". Но это нарушает логику. 
+        Можно внутри области переписки переключать, но так как это статика, я сделаю блок "Переписка: Береснев Платон" (дружеская), и отдельный блок "Переписка с Наймушиной А.А. (файлы)", но это будет сумбурно. 
+        Лучше в одном чате покажу всё как микс, но с подписями. Но пользователь увидит. Я создам единую ленту, где сверху — сообщения с Платоном, потом с Наймушиной, потом с завучем, и с библиотекарем, это будет похоже на агрегатор, но в Teams так не бывает.
+        Однако задание творческое, поэтому сделаем единый скролл-диалог "Последние сообщения из важных чатов", подписав от кого. Это будет понятно. Например: 
+        -->
+
+        <div class="conversation-panel">
+            <div class="conversation-header">
+                <span>Чаты: несколько диалогов (сводка) · Плехов Лев 8Е</span>
             </div>
-            <div>
-                <button onclick="showCredits()">Кредиты</button>
-                <button onclick="hideAdminPanel()" style="background: #e74c3c;">Закрыть</button>
+
+            <div class="message-area" style="background-color: #f7f7f7;">
+                <!-- ========== Чат с завучем Малковой ========= -->
+                <div style="font-size:12px; color:#aaa; margin-bottom: -8px;">Чат с Малкова Анна Вячеславовна</div>
+                <div class="message incoming">
+                    <div class="msg-avatar" style="background-color:#f1c6c6;">АМ</div>
+                    <div class="msg-bubble">Лев, добрый день! Напоминаю, что родительское собрание во вторник в 18:30. Жду отчёт по успеваемости.<div class="msg-time">вчера, 16:12</div></div>
+                </div>
+                <div class="message outgoing">
+                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
+                    <div class="msg-bubble">Здравствуйте, да, помню. Я всё передал родителям.<div class="msg-time">вчера, 17:03</div></div>
+                </div>
+                <div class="message incoming">
+                    <div class="msg-avatar" style="background-color:#f1c6c6;">АМ</div>
+                    <div class="msg-bubble">Хорошо. И напоминаю про контрольную работу по математике, не забудьте тетради.<div class="msg-time">09:15</div></div>
+                </div>
+                <div class="message outgoing">
+                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
+                    <div class="msg-bubble">Есть, возьму. Спасибо.<div class="msg-time">09:17</div></div>
+                </div>
+
+                <!-- ========== Чат с библиотекаршей Кашиной ========= -->
+                <div style="font-size:12px; color:#aaa; margin-top:16px;">Чат с Кашина Людмила Валентиновна</div>
+                <div class="message incoming">
+                    <div class="msg-avatar" style="background-color:#d0e3cc;">ЛК</div>
+                    <div class="msg-bubble">Лев, когда планируешь сдать книги по литературе? Уже просрочка на неделю.<div class="msg-time">пн, 10:22</div></div>
+                </div>
+                <div class="message outgoing">
+                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
+                    <div class="msg-bubble">Людмила Валентиновна, завтра принесу точно! Не ругайтесь 😊<div class="msg-time">пн, 10:40</div></div>
+                </div>
+                <div class="message incoming">
+                    <div class="msg-avatar" style="background-color:#d0e3cc;">ЛК</div>
+                    <div class="msg-bubble">Жду завтра. И читательский билет не забудь показать.<div class="msg-time">пн, 11:00</div></div>
+                </div>
+
+                <!-- ========== Чат с Платоном (дружеский, эмотиконы) ========= -->
+                <div style="font-size:12px; color:#aaa; margin-top:16px;">Чат с Береснев Платон 8Е</div>
+                <div class="message incoming">
+                    <div class="msg-avatar" style="background-color:#f9d7a1;">ПБ</div>
+                    <div class="msg-bubble">Левка, го в фут после уроков? :Р<div class="msg-time">13:20</div></div>
+                </div>
+                <div class="message outgoing">
+                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
+                    <div class="msg-bubble">Не, я болею(( дома сижу, скукота :Р ты там забивай за меня!<div class="msg-time">13:22</div></div>
+                </div>
+                <div class="message incoming">
+                    <div class="msg-avatar" style="background-color:#f9d7a1;">ПБ</div>
+                    <div class="msg-bubble">лол, выздоравливай! я сегодня два гола в ворота 8Г положу :D<div class="msg-time">13:25</div></div>
+                </div>
+                <div class="message outgoing">
+                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
+                    <div class="msg-bubble">порви их, чик и ди 😎<div class="msg-time">13:26</div></div>
+                </div>
+
+                <!-- ========== Чат с Наймушиной Анастасией Андреевной (с вложениями) ========= -->
+                <div style="font-size:12px; color:#aaa; margin-top:16px;">Чат с Наймушина Анастасия Андреевна</div>
+                <!-- 1) я отправляю 1.png и 2.png -->
+                <div class="message outgoing">
+                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
+                    <div class="msg-bubble">
+                        <div>отправляю файлы</div>
+                        <div class="file-attachment"><span class="file-icon">PNG</span><span class="file-name">1.png</span></div>
+                        <div class="file-attachment"><span class="file-icon">PNG</span><span class="file-name">2.png</span></div>
+                        <div class="msg-time">09:15</div>
+                    </div>
+                </div>
+                <!-- 2) Наймушина отвечает "Здравствуй, Лев. Почему в электронном виде?" -->
+                <div class="message incoming">
+                    <div class="msg-avatar" style="background-color:#d1b2e8;">НА</div>
+                    <div class="msg-bubble">Здравствуй, Лев. Почему в электронном виде?<div class="msg-time">09:45</div></div>
+                </div>
+                <!-- 3) я отвечаю нижним регистром "мне в компьютере удобнее я болею" -->
+                <div class="message outgoing">
+                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
+                    <div class="msg-bubble">мне в компьютере удобнее я болею<div class="msg-time">09:47</div></div>
+                </div>
+                <!-- 4) я пишу "здравствуйте" (опечатка в логике, но мы напишем после её ответа? Согласно порядку: после 3 он пишет здравствуйте. Но по тексту: после моего ответа она еще не отвечала, значит я отправляю "здравствуйте" снова? Сделаем как в задании: после 3 Лев пишет "здравствуйте", потом Наймушина "в какой программе?", Лев "пеинт", оценка 3. -->
+                <div class="message outgoing">
+                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
+                    <div class="msg-bubble">здравствуйте<div class="msg-time">09:48</div></div>
+                </div>
+                <!-- 5) Наймушина пишет "В какой программе делал?" -->
+                <div class="message incoming">
+                    <div class="msg-avatar" style="background-color:#d1b2e8;">НА</div>
+                    <div class="msg-bubble">В какой программе делал?<div class="msg-time">09:50</div></div>
+                </div>
+                <!-- 6) я пишу "пеинт" -->
+                <div class="message outgoing">
+                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
+                    <div class="msg-bubble">пеинт<div class="msg-time">09:52</div></div>
+                </div>
+                <!-- 7) она пишет "Оценка 3" -->
+                <div class="message incoming">
+                    <div class="msg-avatar" style="background-color:#d1b2e8;">НА</div>
+                    <div class="msg-bubble">Оценка 3<div class="msg-time">09:55</div></div>
+                </div>
+
+                <!-- Завершающая подпись (системная) -->
+                <div class="small-note" style="text-align:center; color:#aaa; margin-top:20px;">все чаты загружены · конец сводки</div>
             </div>
-            <div style="margin-top: 15px; color: #95a5a6; font-size: 12px;">
-                Статус: <span id="statusText">Онлайн</span>
+
+            <!-- Нижняя панель (имитация ввода) -->
+            <div class="message-input-footer">
+                <div class="fake-input">Введите новое сообщение...</div>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#5e5b58"><path d="M16 2H8C4.69 2 2 4.69 2 8v8c0 3.31 2.69 6 6 6h8c3.31 0 6-2.69 6-6V8c0-3.31-2.69-6-6-6z"/></svg>
             </div>
         </div>
     </div>
-    
-    <div id="credits" class="admin-panel" style="display: none; width: 300px;">
-        <h3>КРЕДИТЫ</h3>
-        <div style="padding: 10px; background: #34495e; margin: 10px 0;">
-            "Идея приведена в код Львом П.<br>лИнТех 28 2026"
-        </div>
-        <button onclick="hideCredits()" style="background: #27ae60;">Закрыть</button>
-    </div>
 
-    <script>
-        // Конфиг
-        const CONFIG = {
-            PIN: "2855",
-            AUTO_REFRESH: 90000,
-            IMAGE_PATH: ""  // Картинки в корне
-        };
-
-        // Глобальные переменные
-        let currentPin = "";
-        let autoRefresh = true;
-        let refreshInterval;
-        let simulatedTime = null;
-        let manualImage = null;
-
-        // Инициализация
-        document.addEventListener('keydown', (e) => {
-            if (e.key === '1') {
-                showAdmin();
-            }
-            if (e.key === 'Escape') {
-                hideAdminPanel();
-                hideCredits();
-            }
-        });
-
-        window.onload = function() {
-            initPinInput();
-            loadImage();
-            startAutoRefresh();
-            console.log("Скринменеджер запущен");
-        };
-
-        // Основная функция загрузки картинки
-        function loadImage() {
-            let filename = getCurrentImage();
-            let imgUrl = filename + '?t=' + Date.now();
-            let img = document.getElementById('screenImage');
-            
-            console.log("Загружаем:", filename);
-            
-            img.onload = function() {
-                console.log("Картинка загружена:", filename);
-                updateStatus();
-            };
-            
-            img.onerror = function() {
-                console.log("Ошибка загрузки:", filename);
-                // Пробуем missing.png
-                if (filename !== 'missing.png') {
-                    img.src = 'missing.png?t=' + Date.now();
-                }
-            };
-            
-            img.src = imgUrl;
-        }
-
-        // Определяем какая картинка нужна
-        function getCurrentImage() {
-            if (manualImage) return manualImage;
-            
-            let now = simulatedTime ? new Date(simulatedTime) : new Date();
-            let hour = now.getHours();
-            let minute = now.getMinutes();
-            let time = hour + minute/60;
-            
-            // Ночь: 19:00-7:00
-            if (time >= 19 || time < 7) return 'empty.png';
-            // Утро: 7:00-7:10
-            if (time >= 7 && time < 7.167) return 'readyto.png';
-            // Вечер: 17:00-19:00
-            if (time >= 17 && time < 19) return 'tosleep.png';
-            // День: 7:10-17:00 - заставки по дням
-            let day = now.getDate();
-            let slide = ((day - 1) % 20) + 1;
-            return slide.toString().padStart(2, '0') + '.png';
-        }
-
-        // Автообновление
-        function startAutoRefresh() {
-            if (refreshInterval) clearInterval(refreshInterval);
-            if (!autoRefresh) return;
-            
-            refreshInterval = setInterval(() => {
-                loadImage();
-            }, CONFIG.AUTO_REFRESH);
-        }
-
-        // Админ-панель
-        function showAdmin() {
-            document.getElementById('adminPanel').style.display = 'block';
-            resetPinInput();
-        }
-
-        function hideAdminPanel() {
-            document.getElementById('adminPanel').style.display = 'none';
-            hideCredits();
-        }
-
-        function initPinInput() {
-            let inputs = document.querySelectorAll('.pin-input input');
-            inputs.forEach((input, i) => {
-                input.oninput = (e) => {
-                    if (e.target.value.length === 1) {
-                        currentPin += e.target.value;
-                        if (i < 3) inputs[i+1].focus();
-                        else checkPin();
-                    }
-                };
-                input.onkeydown = (e) => {
-                    if (e.key === 'Backspace' && !e.target.value && i > 0) {
-                        inputs[i-1].focus();
-                        currentPin = currentPin.slice(0, -1);
-                    }
-                };
-            });
-        }
-
-        function checkPin() {
-            if (currentPin === CONFIG.PIN) {
-                document.getElementById('pinSection').style.display = 'none';
-                document.getElementById('mainMenu').style.display = 'block';
-                document.getElementById('pinError').style.display = 'none';
-            } else {
-                document.getElementById('pinError').style.display = 'block';
-                setTimeout(() => {
-                    resetPinInput();
-                    document.getElementById('pinError').style.display = 'none';
-                }, 1000);
-            }
-        }
-
-        function resetPinInput() {
-            currentPin = "";
-            let inputs = document.querySelectorAll('.pin-input input');
-            inputs.forEach(input => input.value = "");
-            if (inputs[0]) inputs[0].focus();
-        }
-
-        // Функции меню
-        function simulateTime() {
-            let input = document.getElementById('simulatedTime').value;
-            simulatedTime = input || null;
-            loadImage();
-        }
-
-        function changeSlide() {
-            let select = document.getElementById('slideSelect');
-            let value = select.value;
-            
-            if (value === 'auto') {
-                manualImage = null;
-            } else if (value === 'empty') {
-                manualImage = 'empty.png';
-            } else if (value === 'readyto') {
-                manualImage = 'readyto.png';
-            } else if (value === 'tosleep') {
-                manualImage = 'tosleep.png';
-            } else {
-                manualImage = value.padStart(2, '0') + '.png';
-            }
-            
-            loadImage();
-        }
-
-        function refreshPage() {
-            location.reload();
-        }
-
-        function toggleAutoRefresh() {
-            autoRefresh = !autoRefresh;
-            let btn = document.getElementById('refreshBtn');
-            btn.textContent = 'Авто: ' + (autoRefresh ? 'ВКЛ' : 'ВЫКЛ');
-            
-            if (autoRefresh) {
-                startAutoRefresh();
-            } else {
-                clearInterval(refreshInterval);
-            }
-            
-            updateStatus();
-        }
-
-        function showCredits() {
-            document.getElementById('credits').style.display = 'block';
-        }
-
-        function hideCredits() {
-            document.getElementById('credits').style.display = 'none';
-        }
-
-        function updateStatus() {
-            let status = document.getElementById('statusText');
-            if (!status) return;
-            
-            let text = autoRefresh ? 'Авто ВКЛ' : 'Авто ВЫКЛ';
-            if (simulatedTime) text += ', Симуляция';
-            if (manualImage) text += ', Ручной';
-            
-            status.textContent = text;
-        }
-    </script>
+    <!-- подпись в углу, как дополнительный контекст -->
+    <div style="position: fixed; bottom: 6px; right: 16px; font-size: 12px; color: #aaa; background: #ffffffaa; padding: 2px 10px; border-radius: 12px;">МАОУ "ЛИнТех 28" · Плехов Лев 8Е</div>
 </body>
 </html>

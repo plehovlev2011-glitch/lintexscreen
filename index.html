@@ -3,48 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microsoft Teams — Плехов Лев · ЛИнТех 28</title>
+    <title>Microsoft Teams · Плехов Лев 8Е</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+            font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
         }
-
         body {
             height: 100vh;
             display: flex;
-            background-color: #f3f2f1; /* типичный фон Teams (серый/белый) */
+            background-color: #f3f2f1;
         }
-
-        /* БОКОВАЯ ПАНЕЛЬ (ЛЕВОЕ МЕНЮ) — как в десктопном Teams */
+        /* ========== БОКОВАЯ ПАНЕЛЬ ========== */
         .nav-sidebar {
             width: 72px;
-            background-color: #2b2b2b;  /* тёмная тема боковой панели */
+            background-color: #2b2b2b;
             color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 20px;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding-top: 16px;
             flex-shrink: 0;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.2);
+            z-index: 10;
         }
-
-        .avatar-mini {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #5a5c5e;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>');
-            background-size: cover;
-            background-position: center;
-            margin-bottom: 30px;
-            border: 2px solid #888;
-        }
-
-        .nav-icon {
+        /* иконка Microsoft лого (вместо аватара) */
+        .microsoft-logo {
             width: 48px;
+            height: 48px;
+            margin-bottom: 24px;
+            cursor: default;
+            fill: white;
+        }
+        .nav-icon {
+            width: 56px;
             height: 48px;
             display: flex;
             flex-direction: column;
@@ -53,104 +47,112 @@
             margin-bottom: 8px;
             border-radius: 4px;
             color: #d1d1d1;
-            font-size: 12px;
-            cursor: default;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
             transition: 0.1s;
+            border: none;
+            background: transparent;
         }
-
         .nav-icon svg {
             width: 24px;
             height: 24px;
             fill: currentColor;
             margin-bottom: 2px;
         }
-
-        .nav-icon span {
-            font-size: 10px;
-            font-weight: 500;
-        }
-
         .nav-icon.active {
             background-color: #3b3b3b;
             color: white;
             border-left: 2px solid #5c9bd5;
         }
-
         .nav-icon:hover {
             background-color: #3e3e3e;
             color: white;
         }
 
-        /* ОСНОВНАЯ ОБЛАСТЬ: список чатов + переписка */
+        /* ========== ГЛАВНЫЙ КОНТЕЙНЕР ========== */
         .main-container {
             display: flex;
             flex: 1;
             overflow: hidden;
-            background-color: #ffffff;
         }
-
-        /* ПАНЕЛЬ ЧАТОВ (слева, но вторая колонка) */
+        /* панель списка чатов */
         .chat-list-panel {
-            width: 320px;
+            width: 340px;
             background-color: #faf9f8;
             border-right: 1px solid #e1dfdd;
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
         }
-
         .chat-header {
             padding: 16px 16px 8px 16px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 15px;
             color: #252423;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .copilot-badge {
+            background: linear-gradient(135deg, #4b4b4b, #2b2b2b);
+            color: white;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            border: 1px solid #8a8a8a;
+        }
+        .copilot-badge img { width: 20px; height: 20px; }
+        .chat-search {
+            padding: 8px 16px;
+            background-color: #f2f2f2;
             border-bottom: 1px solid #e1dfdd;
         }
-
+        .fake-search {
+            background-color: white;
+            border-radius: 20px;
+            padding: 6px 14px;
+            color: #8a8886;
+            border: 1px solid #d2d0ce;
+        }
         .chat-items {
             flex: 1;
             overflow-y: auto;
         }
-
         .chat-item {
             display: flex;
             align-items: center;
             padding: 12px 16px;
             gap: 12px;
             border-bottom: 1px solid #edebe9;
-            cursor: default;
+            cursor: pointer;
             background-color: #faf9f8;
         }
-
-        .chat-item.active {
+        .chat-item.active-chat {
             background-color: #e5f0fb;
         }
-
         .chat-avatar {
-            width: 44px;
-            height: 44px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
             background-color: #c7e0f4;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
+            font-weight: 700;
             color: #1f1f1f;
             flex-shrink: 0;
             text-transform: uppercase;
             font-size: 16px;
         }
-        /* Аватарки специфичные */
-        .chat-avatar.anna { background-color: #f1c6c6; }
-        .chat-avatar.ludmila { background-color: #d0e3cc; }
-        .chat-avatar.platon { background-color: #f9d7a1; }
-        .chat-avatar.nastya { background-color: #d1b2e8; }
-
         .chat-info {
             flex: 1;
             min-width: 0;
         }
-
         .chat-name {
             font-weight: 600;
             font-size: 15px;
@@ -172,7 +174,7 @@
             margin-top: 4px;
         }
 
-        /* ПАНЕЛЬ ПЕРЕПИСКИ (справа) */
+        /* панель беседы */
         .conversation-panel {
             flex: 1;
             background-color: #ffffff;
@@ -180,16 +182,26 @@
             flex-direction: column;
             overflow: hidden;
         }
-
-        .conversation-header {
-            padding: 16px 20px;
+        .conv-header {
+            padding: 14px 20px;
             border-bottom: 1px solid #e1dfdd;
             font-weight: 600;
-            font-size: 15px;
-            color: #252423;
+            font-size: 16px;
             background-color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-
+        .copilot-context {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            font-size: 13px;
+            background: #f0f0f0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
         .message-area {
             flex: 1;
             overflow-y: auto;
@@ -197,24 +209,15 @@
             background-color: #f7f7f7;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
-
         .message {
             display: flex;
-            gap: 12px;
-            max-width: 70%;
+            gap: 10px;
+            max-width: 75%;
         }
-
-        .message.incoming {
-            align-self: flex-start;
-        }
-
-        .message.outgoing {
-            align-self: flex-end;
-            flex-direction: row-reverse;
-        }
-
+        .message.incoming { align-self: flex-start; }
+        .message.outgoing { align-self: flex-end; flex-direction: row-reverse; }
         .msg-avatar {
             width: 36px;
             height: 36px;
@@ -224,298 +227,418 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
             font-weight: 600;
         }
-
         .msg-bubble {
             background-color: white;
             padding: 10px 14px;
             border-radius: 18px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.07);
             font-size: 14px;
-            color: #252423;
-            line-height: 1.4;
-            word-break: break-word;
             border: 1px solid #eaeaea;
+            line-height: 1.4;
         }
-
         .message.outgoing .msg-bubble {
             background-color: #e5f0fb;
-            border: 1px solid #b6d6f0;
+            border-color: #b6d6f0;
         }
-
         .msg-time {
             font-size: 11px;
             color: #8a8886;
-            margin-top: 4px;
+            margin-top: 5px;
             text-align: right;
         }
-
-        /* вложения файлов */
         .file-attachment {
             display: flex;
             align-items: center;
-            background-color: #f0f0f0;
+            background: #f0f0f0;
             border-radius: 8px;
-            padding: 8px 12px;
-            margin: 8px 0 4px;
+            padding: 6px 12px;
             gap: 12px;
-            border: 1px solid #d2d0ce;
+            margin: 6px 0 4px;
+            border: 1px solid #ccc;
+            cursor: pointer;
         }
-
-        .file-icon {
-            background: #8a8886;
+        .inline-image {
+            max-width: 180px;
+            border-radius: 12px;
+            margin: 4px 0;
+            border: 1px solid #aaa;
+            cursor: pointer;
+        }
+        .error-popup {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2b2b2b;
             color: white;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px black;
+            z-index: 2000;
+            display: none;
         }
-
-        .file-name {
-            font-weight: 500;
-            color: #1f1f1f;
+        .spinner {
+            border: 3px solid #ddd;
+            border-top: 3px solid #0078d4;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
         }
-
-        /* нижняя панель ввода (ненастоящая) */
-        .message-input-footer {
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .fake-input-area {
             border-top: 1px solid #e1dfdd;
             padding: 12px 20px;
-            background-color: #ffffff;
-            color: #8a8886;
-            font-size: 14px;
+            background: white;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         .fake-input {
             flex: 1;
-            background-color: #f5f5f5;
+            background: #f5f5f5;
             border-radius: 20px;
-            padding: 8px 16px;
-            border: 1px solid #e1dfdd;
-            color: #323130;
+            padding: 10px 16px;
+            border: 1px solid #d2d0ce;
+            outline: none;
+            font-size: 14px;
         }
-
-        /* мелкие детали */
-        .small-note {
-            font-size: 12px;
-            color: #605e5c;
-            margin-top: 4px;
-        }
-
-        .status-badge {
-            width: 10px;
-            height: 10px;
-            background-color: #7fba7a;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 4px;
+        .send-btn {
+            background: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 18px;
+            font-weight: 600;
+            cursor: pointer;
         }
     </style>
+    <!-- встроим SVG как строку (Microsoft лого) -->
 </head>
 <body>
-    <!-- ЛЕВАЯ ПАНЕЛЬ (иконки: Действие, Календарь, Команды, Задания, Чаты, Приложения) -->
+    <!-- попап для ошибок / copilot -->
+    <div id="popup-error" class="error-popup">Недоступно в регионе Россия</div>
+
+    <!-- Боковое меню с рабочими кнопками (переключают view) -->
     <div class="nav-sidebar">
-        <div class="avatar-mini" title="Лев Плехов, 8Е"></div>
-        <div class="nav-icon">
-            <svg viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 8.07 19 9.96 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.04 1.01-3.93 2.58-5.41L6.17 5.17C4.23 7.05 3 9.58 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.42-1.23-4.95-3.17-6.83z"/></svg>
-            <span>Действие</span>
+        <div class="microsoft-logo">
+            <svg viewBox="0 0 24 24" fill="white">
+                <path d="M11.5 3L2 9.1V20h20V9.1L12.5 3h-1zM12 5.3l7 4.5v8.9h-3v-7H9v7H5V9.8l7-4.5zM8 18h8v-5H8v5z"/>
+            </svg>
         </div>
-        <div class="nav-icon">
-            <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM7 12h5v2H7z"/></svg>
-            <span>Календарь</span>
-        </div>
-        <div class="nav-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 12.25c1.24 0 2.25-1.01 2.25-2.25S13.24 7.75 12 7.75 9.75 8.76 9.75 10s1.01 2.25 2.25 2.25zm0-7.5c2.9 0 5.25 2.35 5.25 5.25s-2.35 5.25-5.25 5.25S6.75 12.9 6.75 10 9.1 4.75 12 4.75zM4 17.5c.88-1.27 3.03-2.5 8-2.5s7.12 1.23 8 2.5v2H4v-2z"/></svg>
-            <span>Команды</span>
-        </div>
-        <div class="nav-icon">
-            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-            <span>Задания</span>
-        </div>
-        <div class="nav-icon active">
-            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-            <span>Чаты</span>
-        </div>
-        <div class="nav-icon">
-            <svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
-            <span>Приложения</span>
-        </div>
+        <button class="nav-icon" data-page="action"><svg viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 8.07 19 9.96 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.04 1.01-3.93 2.58-5.41L6.17 5.17C4.23 7.05 3 9.58 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.42-1.23-4.95-3.17-6.83z"/></svg><span>Действие</span></button>
+        <button class="nav-icon" data-page="calendar"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM7 12h5v2H7z"/></svg><span>Календарь</span></button>
+        <button class="nav-icon" data-page="teams"><svg viewBox="0 0 24 24"><path d="M12 12.25c1.24 0 2.25-1.01 2.25-2.25S13.24 7.75 12 7.75 9.75 8.76 9.75 10s1.01 2.25 2.25 2.25zm0-7.5c2.9 0 5.25 2.35 5.25 5.25s-2.35 5.25-5.25 5.25S6.75 12.9 6.75 10 9.1 4.75 12 4.75zM4 17.5c.88-1.27 3.03-2.5 8-2.5s7.12 1.23 8 2.5v2H4v-2z"/></svg><span>Команды</span></button>
+        <button class="nav-icon" data-page="assignments"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg><span>Задания</span></button>
+        <button class="nav-icon active" data-page="chats"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><span>Чаты</span></button>
+        <button class="nav-icon" data-page="apps"><svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg><span>Приложения</span></button>
     </div>
 
-    <div class="main-container">
-        <!-- СПИСОК ЧАТОВ (слева) -->
-        <div class="chat-list-panel">
-            <div class="chat-header">
-                <span>Недавние чаты</span>
-            </div>
-            <div class="chat-items">
-                <!-- Чат с Малковой А.В. (завуч) -->
-                <div class="chat-item">
-                    <div class="chat-avatar anna">АМ</div>
-                    <div class="chat-info">
-                        <div class="chat-name">Малкова Анна Вячеславовна <span class="chat-time">10:42</span></div>
-                        <div class="chat-preview">Вы: когда собрание?</div>
-                    </div>
-                </div>
-                <!-- Чат с Кашиной Л.В. (библиотека) -->
-                <div class="chat-item">
-                    <div class="chat-avatar ludmila">ЛК</div>
-                    <div class="chat-info">
-                        <div class="chat-name">Кашина Людмила Валентиновна <span class="chat-time">вчера</span></div>
-                        <div class="chat-preview">Вы: учебник сдадите?</div>
-                    </div>
-                </div>
-                <!-- Чат с Платоном (активный выделен) -->
-                <div class="chat-item active">
-                    <div class="chat-avatar platon">ПБ</div>
-                    <div class="chat-info">
-                        <div class="chat-name">Береснев Платон 8Е <span class="chat-time">13:25</span></div>
-                        <div class="chat-preview">Платон: лол :Р</div>
-                    </div>
-                </div>
-                <!-- Чат с Наймушиной А.А. -->
-                <div class="chat-item">
-                    <div class="chat-avatar nastya">НА</div>
-                    <div class="chat-info">
-                        <div class="chat-name">Наймушина Анастасия Андреевна <span class="chat-time">11:03</span></div>
-                        <div class="chat-preview">Оценка 3</div>
-                    </div>
-                </div>
-                <!-- Ещё пара чатов для "много чатов" -->
-                <div class="chat-item"><div class="chat-avatar">СМ</div><div class="chat-info"><div class="chat-name">Смирнов Дима <span class="chat-time">пн</span></div><div class="chat-preview">ок</div></div></div>
-                <div class="chat-item"><div class="chat-avatar">АЛ</div><div class="chat-info"><div class="chat-name">Алексей Борисович <span class="chat-time">12 апр</span></div><div class="chat-preview">задание на пятницу</div></div></div>
-                <div class="chat-item"><div class="chat-avatar">ИВ</div><div class="chat-info"><div class="chat-name">Иванова Елена <span class="chat-time">11 апр</span></div><div class="chat-preview">спасибо</div></div></div>
-            </div>
-        </div>
-
-        <!-- ОСНОВНАЯ ПАНЕЛЬ (переписка) динамически меняется, но покажем чат с Платоном (так как активный) и вставим все переписки через скрытые блоки? -->
-        <!-- Поскольку задача показать все переписки, лучше в одной области покажем пример переписки Платона, а ниже скрытые диалоги — нет, нужно отобразить всё сразу. 
-        Но в Teams обычно один открытый чат. Я сделаю удобно: сейчас активный Платон (дружеская), но я вставлю четыре разных сообщения разных людей подряд? Так некрасиво.
-        Сделаем карусель сообщений? Нет, более правильно: визуально покажем, что в чатах много записей, а открыт чат с Платоном, но в этой же области отобразим также переписку с Наймушиной (как пример вложений) отдельным фрагментом ниже под чертой? 
-        Лучше поступим так: сделаем вкладки? Но Teams так не делает. Я создам переписку с Платоном (активный чат) и чуть ниже — отдельно переписку с Наймушиной Анастасией Андреевной, пометив, что это "Последние сообщения из других чатов". Но это нарушает логику. 
-        Можно внутри области переписки переключать, но так как это статика, я сделаю блок "Переписка: Береснев Платон" (дружеская), и отдельный блок "Переписка с Наймушиной А.А. (файлы)", но это будет сумбурно. 
-        Лучше в одном чате покажу всё как микс, но с подписями. Но пользователь увидит. Я создам единую ленту, где сверху — сообщения с Платоном, потом с Наймушиной, потом с завучем, и с библиотекарем, это будет похоже на агрегатор, но в Teams так не бывает.
-        Однако задание творческое, поэтому сделаем единый скролл-диалог "Последние сообщения из важных чатов", подписав от кого. Это будет понятно. Например: 
-        -->
-
-        <div class="conversation-panel">
-            <div class="conversation-header">
-                <span>Чаты: несколько диалогов (сводка) · Плехов Лев 8Е</span>
-            </div>
-
-            <div class="message-area" style="background-color: #f7f7f7;">
-                <!-- ========== Чат с завучем Малковой ========= -->
-                <div style="font-size:12px; color:#aaa; margin-bottom: -8px;">Чат с Малкова Анна Вячеславовна</div>
-                <div class="message incoming">
-                    <div class="msg-avatar" style="background-color:#f1c6c6;">АМ</div>
-                    <div class="msg-bubble">Лев, добрый день! Напоминаю, что родительское собрание во вторник в 18:30. Жду отчёт по успеваемости.<div class="msg-time">вчера, 16:12</div></div>
-                </div>
-                <div class="message outgoing">
-                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
-                    <div class="msg-bubble">Здравствуйте, да, помню. Я всё передал родителям.<div class="msg-time">вчера, 17:03</div></div>
-                </div>
-                <div class="message incoming">
-                    <div class="msg-avatar" style="background-color:#f1c6c6;">АМ</div>
-                    <div class="msg-bubble">Хорошо. И напоминаю про контрольную работу по математике, не забудьте тетради.<div class="msg-time">09:15</div></div>
-                </div>
-                <div class="message outgoing">
-                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
-                    <div class="msg-bubble">Есть, возьму. Спасибо.<div class="msg-time">09:17</div></div>
-                </div>
-
-                <!-- ========== Чат с библиотекаршей Кашиной ========= -->
-                <div style="font-size:12px; color:#aaa; margin-top:16px;">Чат с Кашина Людмила Валентиновна</div>
-                <div class="message incoming">
-                    <div class="msg-avatar" style="background-color:#d0e3cc;">ЛК</div>
-                    <div class="msg-bubble">Лев, когда планируешь сдать книги по литературе? Уже просрочка на неделю.<div class="msg-time">пн, 10:22</div></div>
-                </div>
-                <div class="message outgoing">
-                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
-                    <div class="msg-bubble">Людмила Валентиновна, завтра принесу точно! Не ругайтесь 😊<div class="msg-time">пн, 10:40</div></div>
-                </div>
-                <div class="message incoming">
-                    <div class="msg-avatar" style="background-color:#d0e3cc;">ЛК</div>
-                    <div class="msg-bubble">Жду завтра. И читательский билет не забудь показать.<div class="msg-time">пн, 11:00</div></div>
-                </div>
-
-                <!-- ========== Чат с Платоном (дружеский, эмотиконы) ========= -->
-                <div style="font-size:12px; color:#aaa; margin-top:16px;">Чат с Береснев Платон 8Е</div>
-                <div class="message incoming">
-                    <div class="msg-avatar" style="background-color:#f9d7a1;">ПБ</div>
-                    <div class="msg-bubble">Левка, го в фут после уроков? :Р<div class="msg-time">13:20</div></div>
-                </div>
-                <div class="message outgoing">
-                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
-                    <div class="msg-bubble">Не, я болею(( дома сижу, скукота :Р ты там забивай за меня!<div class="msg-time">13:22</div></div>
-                </div>
-                <div class="message incoming">
-                    <div class="msg-avatar" style="background-color:#f9d7a1;">ПБ</div>
-                    <div class="msg-bubble">лол, выздоравливай! я сегодня два гола в ворота 8Г положу :D<div class="msg-time">13:25</div></div>
-                </div>
-                <div class="message outgoing">
-                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
-                    <div class="msg-bubble">порви их, чик и ди 😎<div class="msg-time">13:26</div></div>
-                </div>
-
-                <!-- ========== Чат с Наймушиной Анастасией Андреевной (с вложениями) ========= -->
-                <div style="font-size:12px; color:#aaa; margin-top:16px;">Чат с Наймушина Анастасия Андреевна</div>
-                <!-- 1) я отправляю 1.png и 2.png -->
-                <div class="message outgoing">
-                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
-                    <div class="msg-bubble">
-                        <div>отправляю файлы</div>
-                        <div class="file-attachment"><span class="file-icon">PNG</span><span class="file-name">1.png</span></div>
-                        <div class="file-attachment"><span class="file-icon">PNG</span><span class="file-name">2.png</span></div>
-                        <div class="msg-time">09:15</div>
-                    </div>
-                </div>
-                <!-- 2) Наймушина отвечает "Здравствуй, Лев. Почему в электронном виде?" -->
-                <div class="message incoming">
-                    <div class="msg-avatar" style="background-color:#d1b2e8;">НА</div>
-                    <div class="msg-bubble">Здравствуй, Лев. Почему в электронном виде?<div class="msg-time">09:45</div></div>
-                </div>
-                <!-- 3) я отвечаю нижним регистром "мне в компьютере удобнее я болею" -->
-                <div class="message outgoing">
-                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
-                    <div class="msg-bubble">мне в компьютере удобнее я болею<div class="msg-time">09:47</div></div>
-                </div>
-                <!-- 4) я пишу "здравствуйте" (опечатка в логике, но мы напишем после её ответа? Согласно порядку: после 3 он пишет здравствуйте. Но по тексту: после моего ответа она еще не отвечала, значит я отправляю "здравствуйте" снова? Сделаем как в задании: после 3 Лев пишет "здравствуйте", потом Наймушина "в какой программе?", Лев "пеинт", оценка 3. -->
-                <div class="message outgoing">
-                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
-                    <div class="msg-bubble">здравствуйте<div class="msg-time">09:48</div></div>
-                </div>
-                <!-- 5) Наймушина пишет "В какой программе делал?" -->
-                <div class="message incoming">
-                    <div class="msg-avatar" style="background-color:#d1b2e8;">НА</div>
-                    <div class="msg-bubble">В какой программе делал?<div class="msg-time">09:50</div></div>
-                </div>
-                <!-- 6) я пишу "пеинт" -->
-                <div class="message outgoing">
-                    <div class="msg-avatar" style="background-color:#b0c4de;">ЛП</div>
-                    <div class="msg-bubble">пеинт<div class="msg-time">09:52</div></div>
-                </div>
-                <!-- 7) она пишет "Оценка 3" -->
-                <div class="message incoming">
-                    <div class="msg-avatar" style="background-color:#d1b2e8;">НА</div>
-                    <div class="msg-bubble">Оценка 3<div class="msg-time">09:55</div></div>
-                </div>
-
-                <!-- Завершающая подпись (системная) -->
-                <div class="small-note" style="text-align:center; color:#aaa; margin-top:20px;">все чаты загружены · конец сводки</div>
-            </div>
-
-            <!-- Нижняя панель (имитация ввода) -->
-            <div class="message-input-footer">
-                <div class="fake-input">Введите новое сообщение...</div>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="#5e5b58"><path d="M16 2H8C4.69 2 2 4.69 2 8v8c0 3.31 2.69 6 6 6h8c3.31 0 6-2.69 6-6V8c0-3.31-2.69-6-6-6z"/></svg>
-            </div>
-        </div>
+    <!-- динамический контент будет обновляться через JS -->
+    <div id="app-content" class="main-container">
+        <!-- сюда React-подобно вставится панель чатов или другие страницы -->
     </div>
 
-    <!-- подпись в углу, как дополнительный контекст -->
-    <div style="position: fixed; bottom: 6px; right: 16px; font-size: 12px; color: #aaa; background: #ffffffaa; padding: 2px 10px; border-radius: 12px;">МАОУ "ЛИнТех 28" · Плехов Лев 8Е</div>
+    <script>
+        (function() {
+            // ---------- данные переписок (с временными метками) ----------
+            function randomTimeLastWeek(dayOffset = 1) {
+                let d = new Date();
+                d.setDate(d.getDate() - dayOffset);
+                d.setHours(10 + Math.floor(Math.random()*8), Math.floor(Math.random()*60), 0,0);
+                return d;
+            }
+            function randomTimeToday(startH=9, endH=14) {
+                let d = new Date();
+                d.setHours(startH + Math.floor(Math.random()*(endH-startH)), Math.floor(Math.random()*60), 0,0);
+                return d;
+            }
+
+            // сегодняшняя переписка Наймушиной (сегодня)
+            let now = new Date();
+            let najTime1 = new Date(now.setHours(9,2,0,0));
+            let najTime2 = new Date(now.setHours(9,45,0,0));
+            let najTime3 = new Date(now.setHours(9,47,0,0));
+            let najTime4 = new Date(now.setHours(9,48,0,0));
+            let najTime5 = new Date(now.setHours(9,55,0,0));
+            let najTime6 = new Date(now.setHours(10,2,0,0));
+            let najTime7 = new Date(now.setHours(14,10,0,0));
+
+            // данные чатов (минимум по 10 сообщений от каждой стороны, кроме Наймушиной (уже есть), добавим Микрюкову)
+            const chatsData = {
+                'Малкова Анна Вячеславовна': {
+                    avatar:'АМ', bg:'#f1c6c6',
+                    messages: [
+                        { side: 'in', text: 'Лев, добрый день. Напоминаю собрание во вторник в 18:00.', time: randomTimeLastWeek(5) },
+                        { side: 'out', text: 'Здравствуйте, передал родителям.', time: randomTimeLastWeek(5, 30) },
+                        { side: 'in', text: 'Итоги четверти надо сдать до пятницы.', time: randomTimeLastWeek(4) },
+                        { side: 'out', text: 'Хорошо, уже готовлю.', time: randomTimeLastWeek(4, 20) },
+                        { side: 'in', text: 'Справку из спортзала принеси.', time: randomTimeLastWeek(3) },
+                        { side: 'out', text: 'Обязательно.', time: randomTimeLastWeek(3, 10) },
+                        { side: 'in', text: 'Ты записался на олимпиаду?', time: randomTimeLastWeek(2) },
+                        { side: 'out', text: 'Да, по русскому.', time: randomTimeLastWeek(2, 45) },
+                        { side: 'in', text: 'Не опаздывай на занятия.', time: randomTimeLastWeek(1) },
+                        { side: 'out', text: 'Ок', time: randomTimeLastWeek(1, 15) },
+                        { side: 'in', text: 'Видела твой доклад, молодец.', time: randomTimeLastWeek(1, 50) },
+                        { side: 'out', text: 'Спасибо!', time: randomTimeLastWeek(0, 9) },
+                    ]
+                },
+                'Кашина Людмила Валентиновна': {
+                    avatar:'ЛК', bg:'#d0e3cc',
+                    messages: [
+                        { side: 'in', text: 'Лев, когда книги сдашь?', time: randomTimeLastWeek(7) },
+                        { side: 'out', text: 'На следующей неделе.', time: randomTimeLastWeek(7, 10) },
+                        { side: 'in', text: 'У нас долг по чтению.', time: randomTimeLastWeek(6) },
+                        { side: 'out', text: 'Я помню, принесу во вторник.', time: randomTimeLastWeek(6, 14) },
+                        { side: 'in', text: 'Все три тома?', time: randomTimeLastWeek(5) },
+                        { side: 'out', text: 'Да, все.', time: randomTimeLastWeek(5, 30) },
+                        { side: 'in', text: 'Хорошо, жду.', time: randomTimeLastWeek(4) },
+                        { side: 'out', text: 'Извините, задержка.', time: randomTimeLastWeek(3) },
+                        { side: 'in', text: 'Лев, ты в библиотеку зайди.', time: randomTimeLastWeek(2) },
+                        { side: 'out', text: 'Сегодня зайду после уроков.', time: randomTimeLastWeek(2, 22) },
+                        { side: 'in', text: 'Ок, до встречи.', time: randomTimeLastWeek(1) },
+                        { side: 'out', text: 'До свидания.', time: randomTimeLastWeek(1, 40) },
+                    ]
+                },
+                'Береснев Платон 8е': {
+                    avatar:'ПБ', bg:'#f9d7a1',
+                    messages: [
+                        { side: 'in', text: 'Здарова, че как? :Р', time: randomTimeLastWeek(6) },
+                        { side: 'out', text: 'Норм, болею только.', time: randomTimeLastWeek(6, 20) },
+                        { side: 'in', text: 'го в доту? :D', time: randomTimeLastWeek(5) },
+                        { side: 'out', text: 'не, комп тупит', time: randomTimeLastWeek(5, 35) },
+                        { side: 'in', text: 'лол, купи новый', time: randomTimeLastWeek(4) },
+                        { side: 'out', text: 'денег нет )', time: randomTimeLastWeek(4, 12) },
+                        { side: 'in', text: 'я в футболе 2 гола забил', time: randomTimeLastWeek(3) },
+                        { side: 'out', text: 'крут, завидую :Р', time: randomTimeLastWeek(3, 18) },
+                        { side: 'in', text: 'училка по алгебре бесит', time: randomTimeLastWeek(2) },
+                        { side: 'out', text: 'аналогично', time: randomTimeLastWeek(2, 44) },
+                        { side: 'in', text: 'го в кино на выходных', time: randomTimeLastWeek(1) },
+                        { side: 'out', text: 'давай, если выздоровею', time: randomTimeLastWeek(1, 9) },
+                        { side: 'in', text: '😎', time: randomTimeLastWeek(0, 14) },
+                        { side: 'out', text: ':Р', time: randomTimeLastWeek(0, 15) },
+                    ]
+                },
+                'Наймушина Анастасия Андреевна': {
+                    avatar:'НА', bg:'#d1b2e8',
+                    messages: [
+                        { side: 'out', text: 'отправляю файлы', time: najTime1, images: ['1.png', '2.png'] },
+                        { side: 'in', text: 'Здравствуй, Лев. Почему в электронном виде?', time: najTime2 },
+                        { side: 'out', text: 'мне в компьютере удобнее я болею', time: najTime3 },
+                        { side: 'out', text: 'здравствуйте', time: najTime4 },
+                        { side: 'in', text: 'В какой программе делал?', time: najTime5 },
+                        { side: 'out', text: 'пеинт', time: najTime6 },
+                        { side: 'in', text: 'Оценка 3', time: najTime7 },
+                    ]
+                },
+                'Микрюкова Надежда Анатольевна': {
+                    avatar:'МН', bg:'#b3cde0',
+                    messages: [
+                        { side: 'out', text: 'отправляю сочинение', time: randomTimeLastWeek(2), attachment: { name: 'СочинениеПлехов.RTF', type: 'file' } },
+                        { side: 'in', text: 'Здравствуй, Лев. Получила файл.', time: randomTimeLastWeek(2, 65) }, // через час
+                        { side: 'in', text: 'оценка 4', time: randomTimeLastWeek(2, 70) },
+                        { side: 'out', text: 'Спасибо', time: randomTimeLastWeek(2, 80) },
+                        { side: 'in', text: 'Но раскрытие темы неполное.', time: randomTimeLastWeek(1) },
+                        { side: 'out', text: 'Исправлюсь.', time: randomTimeLastWeek(1, 30) },
+                        { side: 'in', text: 'Жду в след. раз.', time: randomTimeLastWeek(0, 40) },
+                    ]
+                }
+            };
+
+            // ----- инициализация localStorage -----
+            let storedChats = localStorage.getItem('teams_chats_lev');
+            if (storedChats) {
+                try { Object.assign(chatsData, JSON.parse(storedChats)); } catch(e) {}
+            } else {
+                localStorage.setItem('teams_chats_lev', JSON.stringify(chatsData));
+            }
+
+            // ----- обновление чата в хранилище -----
+            function saveChats() { localStorage.setItem('teams_chats_lev', JSON.stringify(chatsData)); }
+
+            // ----- глобальный попап -----
+            const popup = document.getElementById('popup-error');
+            function showPopup(msg, isCopilot = false) {
+                popup.style.display = 'block';
+                popup.textContent = msg;
+                setTimeout(() => popup.style.display = 'none', 2000);
+            }
+
+            // ----- рендер основной области в зависимости от страницы (sPA) -----
+            const app = document.getElementById('app-content');
+            let currentPage = 'chats';
+            let activeChatKey = 'Береснев Платон 8е'; // по умолчанию
+
+            function renderPage() {
+                if (currentPage === 'chats') {
+                    renderChatsView();
+                } else {
+                    // другие страницы — заглушка с возвратом
+                    app.innerHTML = `
+                        <div style="flex:1; display:flex; align-items:center; justify-content:center; background:#f7f7f7;">
+                            <div style="background:white; padding:40px; border-radius:24px; box-shadow:0 2px 8px #ccc;">
+                                <h2>Раздел «${currentPage}»</h2>
+                                <p style="margin:16px 0;">Здесь мог быть контент. Вернуться в <button class="nav-icon" style="display:inline-block; width:auto; padding:4px 16px; background:#0078d4; color:white;" onclick="window.goToChats()">Чаты</button></p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            window.goToChats = function() {
+                currentPage = 'chats';
+                document.querySelectorAll('.nav-icon').forEach(b => b.classList.remove('active'));
+                document.querySelector('[data-page="chats"]').classList.add('active');
+                renderPage();
+            };
+
+            // ----- ЧАТЫ (основное) -----
+            function renderChatsView() {
+                let chatKeys = Object.keys(chatsData);
+                let activeChat = activeChatKey;
+
+                let chatListHtml = chatKeys.map(key => {
+                    let chat = chatsData[key];
+                    let lastMsg = chat.messages[chat.messages.length-1];
+                    let timeStr = lastMsg.time ? new Date(lastMsg.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
+                    let preview = lastMsg.text || '';
+                    return `
+                        <div class="chat-item ${activeChat === key ? 'active-chat' : ''}" data-chat-key="${key}">
+                            <div class="chat-avatar" style="background-color:${chat.bg};">${chat.avatar}</div>
+                            <div class="chat-info">
+                                <div class="chat-name">${key} <span class="chat-time">${timeStr}</span></div>
+                                <div class="chat-preview">${preview.substring(0,25)}${preview.length>25?'…':''}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                let messagesHtml = '';
+                let current = chatsData[activeChat];
+                if (current) {
+                    messagesHtml = current.messages.map((msg, idx) => {
+                        let time = new Date(msg.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                        let attachHtml = '';
+                        if (msg.images) {
+                            attachHtml = msg.images.map(f => `<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='80' viewBox='0 0 100 80'%3E%3Crect width='100' height='80' fill='%23dddddd'/%3E%3Ctext x='10' y='45' fill='%23333' font-size='14'%3E${f}%3C/text%3E%3C/svg%3E" class="inline-image" title="${f} (просмотр)" />`).join('');
+                        }
+                        if (msg.attachment) {
+                            attachHtml = `<div class="file-attachment" onclick="showPopup('Ошибка чтения файла')"><span style="font-weight:bold;">📄 ${msg.attachment.name}</span> <span style="margin-left:auto;">⚠️</span></div>`;
+                        }
+                        return `
+                            <div class="message ${msg.side === 'out' ? 'outgoing' : 'incoming'}">
+                                <div class="msg-avatar" style="background-color:${msg.side==='out'?'#b0c4de':current.bg};">${msg.side==='out'?'ЛП':current.avatar}</div>
+                                <div class="msg-bubble">${msg.text || ''} ${attachHtml}<div class="msg-time">${time}</div></div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                app.innerHTML = `
+                    <div class="chat-list-panel">
+                        <div class="chat-header">
+                            <span>Чаты</span>
+                            <div class="copilot-badge" id="copilotGlobalBtn">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z'/%3E%3C/svg%3E" style="filter:invert(1);">
+                                Copilot
+                            </div>
+                        </div>
+                        <div class="chat-search"><div class="fake-search">🔍 Поиск</div></div>
+                        <div class="chat-items" id="chatItemsContainer">
+                            ${chatListHtml}
+                        </div>
+                        <div style="padding:16px; background:#eaeaea; display:flex; gap:8px; align-items:center; font-size:13px; cursor:pointer;" id="copilotSuggestion">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='%230078d4'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z'/%3E%3C/svg%3E" width="28">
+                            <span>Попробуйте Copilot — нейросеть для корпоративной рутины</span>
+                        </div>
+                    </div>
+                    <div class="conversation-panel">
+                        <div class="conv-header">
+                            <span>${activeChat}</span>
+                            <div class="copilot-context" id="copilotContextBtn">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='%23333'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z'/%3E%3C/svg%3E"> Copilot
+                            </div>
+                        </div>
+                        <div class="message-area" id="messageArea">
+                            ${messagesHtml}
+                        </div>
+                        <div class="fake-input-area">
+                            <input type="text" class="fake-input" placeholder="Введите сообщение..." id="msgInput">
+                            <button class="send-btn" id="sendMsgBtn">Отправить</button>
+                        </div>
+                    </div>
+                `;
+
+                // обработчики Copilot
+                document.getElementById('copilotGlobalBtn')?.addEventListener('click', copilotClick);
+                document.getElementById('copilotSuggestion')?.addEventListener('click', copilotClick);
+                document.getElementById('copilotContextBtn')?.addEventListener('click', copilotClick);
+
+                // клик по чату
+                document.querySelectorAll('.chat-item').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        let key = el.dataset.chatKey;
+                        if (key) { activeChatKey = key; renderChatsView(); }
+                    });
+                });
+
+                // отправка сообщения (сохраняется в localStorage)
+                document.getElementById('sendMsgBtn')?.addEventListener('click', (e) => {
+                    let input = document.getElementById('msgInput');
+                    let text = input.value.trim();
+                    if (!text) return;
+                    let chat = chatsData[activeChatKey];
+                    if (chat) {
+                        chat.messages.push({ side: 'out', text: text, time: new Date() });
+                        saveChats();
+                        input.value = '';
+                        renderChatsView();
+                    }
+                });
+
+                // обработка вложений у Микрюковой
+                document.querySelectorAll('.file-attachment').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        showPopup('Ошибка чтения файла');
+                    });
+                });
+
+                // картинки пнг (клик - тоже ошибка, но видно сразу)
+                document.querySelectorAll('.inline-image').forEach(el => {
+                    el.addEventListener('click', () => showPopup('Просмотр недоступен (имитация)'));
+                });
+            }
+
+            // заглушка copilot с загрузкой
+            function copilotClick() {
+                let popup = document.getElementById('popup-error');
+                popup.style.display = 'block';
+                popup.innerHTML = '<div class="spinner"></div>';
+                setTimeout(() => {
+                    popup.innerHTML = 'Недоступно в регионе Россия';
+                    setTimeout(() => popup.style.display = 'none', 1500);
+                }, 1000);
+            }
+
+            // навигация
+            document.querySelectorAll('.nav-icon').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.nav-icon').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    let page = btn.dataset.page;
+                    if (page === 'chats') currentPage = 'chats';
+                    else currentPage = page;
+                    renderPage();
+                });
+            });
+
+            renderPage();
+            // показать popup при загрузке если copilot не тыкали — не надо
+        })();
+    </script>
 </body>
 </html>
